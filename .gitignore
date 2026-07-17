@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+corpus/*.pgmstream
+!corpus/*.pgmstream.sha256
+*.tmp
+sgram_mix

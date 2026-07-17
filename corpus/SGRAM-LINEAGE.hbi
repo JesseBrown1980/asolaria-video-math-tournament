@@ -1,0 +1,7 @@
+HBIHDR|schema=ASOLARIA-VIDEO-MATH-SGRAM-LINEAGE-V1|source_file=SGRAM-LINEAGE.hbp|source_bytes=1922|source_sha256=8869cc97369700537f16a5f01f4e688515262c93a4f22eecfc7e9f1cf9e8a561|row_count=5|offsets=UTF8_BYTES|line_endings=LF|json=0
+HBIROW|row=1|offset=0|len=367|sha256=a401f2037857e09654aec3c79066745a5a3a144ded506ca0d79ae9fdc1cf685a|json=0
+HBIROW|row=2|offset=367|len=482|sha256=e8dbfed892243b28aab2702ea35005583250fdd68b4a7e6049b377b4f28ad4ff|json=0
+HBIROW|row=3|offset=849|len=476|sha256=58851699a99139eb17a21c7ad675764075671a355cddc406747b42c0aa4e7ec3|json=0
+HBIROW|row=4|offset=1325|len=488|sha256=465b873937a26c8db5d3e574f365c67f260e660106790d824a403fba04e91add|json=0
+HBIROW|row=5|offset=1813|len=109|sha256=986eb449372c2a75adeaf2559ee0ab4669e0078422ebeb0871505a072b760aff|json=0
+HBIFTR|source_file=SGRAM-LINEAGE.hbp|indexed_bytes=1922|source_bytes=1922|complete=1|json=0

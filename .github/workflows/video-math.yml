@@ -1,0 +1,129 @@
+name: video-math
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify-corpus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [pyramid_lzu, star_oe9, official_pr038]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build SGRAM (vendored @ 45cc3b3)
+        run: rustc -O tools/sgram/sgram_mix.rs -o sgram_mix
+      - name: Decompress + streaming verify
+        run: |
+          ./sgram_mix decompress "corpus/${{ matrix.source }}.sgram" "corpus/${{ matrix.source }}.pgmstream"
+          (cd corpus && sha256sum -c "${{ matrix.source }}.pgmstream.sha256")
+      - name: Verify slice receipts
+        run: python3 tools/verify_slices.py --corpus corpus --source-id "${{ matrix.source }}" | tee "VERIFY-${{ matrix.source }}.hbp"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: receipt-verify-${{ matrix.source }}
+          path: VERIFY-${{ matrix.source }}.hbp
+
+  nullspace:
+    needs: verify-corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [pyramid_lzu, star_oe9, official_pr038]
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install numpy==2.1.3
+      - name: Decompress corpus
+        run: |
+          rustc -O tools/sgram/sgram_mix.rs -o sgram_mix
+          ./sgram_mix decompress "corpus/${{ matrix.source }}.sgram" "corpus/${{ matrix.source }}.pgmstream"
+          (cd corpus && sha256sum -c "${{ matrix.source }}.pgmstream.sha256")
+      - name: Rank<=3 nullspace meter
+        run: python3 tools/nullspace_rank3.py --corpus corpus --source-id "${{ matrix.source }}" --output "NULLSPACE-${{ matrix.source }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: receipt-nullspace-${{ matrix.source }}
+          path: NULLSPACE-${{ matrix.source }}*
+
+  tournament:
+    needs: verify-corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [pyramid_lzu, star_oe9, official_pr038]
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install numpy==2.1.3
+      - name: Decompress corpus
+        run: |
+          rustc -O tools/sgram/sgram_mix.rs -o sgram_mix
+          ./sgram_mix decompress "corpus/${{ matrix.source }}.sgram" "corpus/${{ matrix.source }}.pgmstream"
+          (cd corpus && sha256sum -c "${{ matrix.source }}.pgmstream.sha256")
+      - name: Hypothesis tournament C0-C8
+        run: python3 tools/tournament.py --corpus corpus --source-id "${{ matrix.source }}" --contract contract/PROJECT-CONTRACT.hbp --output "TOURNAMENT-${{ matrix.source }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: receipt-tournament-${{ matrix.source }}
+          path: TOURNAMENT-${{ matrix.source }}*
+
+  sector12:
+    needs: verify-corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [pyramid_lzu, star_oe9, official_pr038]
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install numpy==2.1.3
+      - name: Decompress corpus
+        run: |
+          rustc -O tools/sgram/sgram_mix.rs -o sgram_mix
+          ./sgram_mix decompress "corpus/${{ matrix.source }}.sgram" "corpus/${{ matrix.source }}.pgmstream"
+          (cd corpus && sha256sum -c "${{ matrix.source }}.pgmstream.sha256")
+      - name: Independent 12-sector re-detection
+        run: python3 tools/sector12_redetect.py --corpus corpus --source-id "${{ matrix.source }}" --output "SECTOR12-${{ matrix.source }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: receipt-sector12-${{ matrix.source }}
+          path: SECTOR12-${{ matrix.source }}*
+
+  fan-in:
+    needs: [nullspace, tournament, sector12]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: receipts
+      - name: Combined omega over all receipts
+        run: |
+          python3 - <<'EOF'
+          import hashlib, pathlib
+          receipts = sorted(pathlib.Path("receipts").rglob("*.hbp"))
+          shas = [(p.as_posix(), hashlib.sha256(p.read_bytes()).hexdigest()) for p in receipts]
+          omega = hashlib.sha256("\n".join(f"{name} {sha}" for name, sha in shas).encode()).hexdigest()
+          rows = ["FANINHDR|schema=ASOLARIA-VIDEO-MATH-FANIN-V1|receipts=%d|fire=0|physical_claim=0|authenticity=UNRESOLVED|json=0" % len(shas)]
+          rows += [f"RECEIPT|path={name}|sha256={sha}|json=0" for name, sha in shas]
+          rows.append(f"FANINOMEGA|omega={omega}|fire=0|physical_claim=0|authenticity=UNRESOLVED|json=0")
+          pathlib.Path("FANIN-OMEGA.hbp").write_text("\n".join(rows) + "\n")
+          print(rows[-1])
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fanin-omega
+          path: FANIN-OMEGA.hbp
