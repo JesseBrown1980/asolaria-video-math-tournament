@@ -1,8 +1,8 @@
-﻿# asolaria-video-math-tournament
+# asolaria-video-math-tournament
 
 Mathematical experiments on video-recorded objects, run as an inverse-geometry
 **tournament** in GitHub Actions containers. This repository is public; the
-raw videos are **not** in it â€” only a derived, deterministic slice corpus.
+raw videos are **not** in it — only a derived, deterministic slice corpus.
 
 ## What this is
 
@@ -13,7 +13,7 @@ public **derived-slice corpus**: 320-wide 8-bit gray P5 slices at exactly
 tie-breaking), concatenated per source into one `pgmstream` with per-slice
 byte-range + SHA-256 receipts.
 
-The stream is compressed with **SGRAM** (Streaming GitRAM) â€” the owning
+The stream is compressed with **SGRAM** (Streaming GitRAM) — the owning
 implementation is vendored at a pinned commit from
 `JesseBrown1980/asolaria-cube-cloud` `hutter/sgram/sgram_mix.rs @ 45cc3b3`:
 block-streaming I/O, bounded RAM, archive byte-identical to the non-streaming
@@ -24,8 +24,8 @@ Cloud jobs then run the math:
 | job | question |
 |---|---|
 | `verify-corpus` | does the published corpus verify byte-for-byte (SGRAM roundtrip + per-slice SHA + PTS arithmetic)? |
-| `nullspace` | do tracked bright-node trajectories form a rank â‰¤ 3 centered measurement matrix (Tomasiâ€“Kanade rigid-body test)? |
-| `tournament` | which hypothesis C0â€“C8 survives forward-render / reverse-readback against held-out frames after MDL/BIC charge? |
+| `nullspace` | do tracked bright-node trajectories form a rank ≤ 3 centered measurement matrix (Tomasi–Kanade rigid-body test)? |
+| `tournament` | which hypothesis C0–C8 survives forward-render / reverse-readback against held-out frames after MDL/BIC charge? |
 | `sector12` | independent re-detection: is any N-fold angular symmetry supported, and does detection track brightness (artifact) or angle (structure)? |
 
 Every job emits HBP/HBI tuple receipts (`KIND|k=v|...|json=0`) and a fan-in
@@ -72,7 +72,8 @@ python3 tools/verify_slices.py --corpus corpus --source-id <id>
 
 Raw-media extraction (`tools/slice_extract.py`) runs only on a seat holding a
 pinned materialization; the ffmpeg build is recorded in the slice receipts.
-Cloud jobs verify published bytes â€” they never re-derive from raw.
+Cloud jobs verify published bytes — they never re-derive from raw.
+
 ## Sealed lane handoff docs
 
 - [LIRIS fan-in summary](docs/liris_fanin_sealed_summary.md): CI-run outcomes, SHA row references, and MEASURED/CANON/UNVERIFIED interpretation.
