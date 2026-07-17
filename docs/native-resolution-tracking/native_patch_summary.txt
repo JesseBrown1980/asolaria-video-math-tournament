@@ -1,0 +1,23 @@
+MEASURED native-patch-track summary
+file=C:/tmp/relic-uap-2559449011145341.mp4
+sha256=CF0F161BBAE03926BFC852C2E675295E544A0B5D57EF8F86DAC3D51DB0C99CD4
+frames=72
+duration_s=72.0
+roi=x[0,520),y[80,420)
+method=median-baseline + 99.5th percentile dark-delta component + largest connected component centroid
+patch_area_mean=769.2083 patch_area_std=467.9807 patch_area_min=64.0000 patch_area_max=2118.0000
+patch_delta_mean_mean=5.0940 patch_delta_mean_std=1.0089 patch_delta_mean_min=3.3522 patch_delta_mean_max=8.6135
+roi_p1_mean=1.2500 roi_p1_std=0.4330 roi_p1_min=1.0000 roi_p1_max=2.0000
+roi_p10_mean=2.0139 roi_p10_std=0.5891 roi_p10_min=1.0000 roi_p10_max=3.0000
+roi_p90_mean=42.5000 roi_p90_std=67.1007 roi_p90_min=8.0000 roi_p90_max=251.0000
+roi_mean_mean=16.0045 roi_mean_std=21.3465 roi_mean_min=5.2820 roi_mean_max=87.1514
+dist_count=71
+dist_mean=656.9527
+dist_std=317.1032
+dist_min=62.0554
+dist_max=1411.4752
+dist_varmean_5win=68518.7813
+patch_total_displacement=102.0074
+star_total_displacement=151.6724
+stable_distance_test_mv_mean=678.4965 mv_std=170.1737
+top20_area_csv=C:/tmp/reliv-native-frames/native_patch_top20_by_area.csv
